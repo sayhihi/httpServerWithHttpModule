@@ -36,7 +36,7 @@ const httpRequestListener = function(request, response) {
   const {url, method} = request
 
   if (method === "POST") {
-    if(url === "/users/signup") {
+  if(url === "/users/signup") {
       let body = "";
 
       request.on("data", (data) => {
@@ -61,32 +61,30 @@ const httpRequestListener = function(request, response) {
 
       });
 
+    } else if(url === "/users/posts") { //method === POST 는 같기 때문에 url만 확인한다!
+      let body = "";
+
+      request.on("data", (data) => {
+        body += data;
+      });
+
+      request.on("end", () => {
+      // console.log("========body:", body)
+       const post = JSON.parse(body);
+
+        posts.push({
+          id: post.id,
+          title: post.title,
+          content: post.content,
+          userId: post.userId,
+
+        });
+
+        response.writeHead(200, {'Content-Type' : 'application/json'})
+        response.end(JSON.stringify({message: "postsCreated"}));
+
+      })
     }
-  // }else if (method === "POST") {
-  //   if(url === "/users/posts") {
-  //     let body = "";
-
-  //     request.on("data", (data) => {
-  //       body += data;
-  //     });
-
-  //     request.on("end", () => {
-  //     console.log("========body:", body)
-  //      const post = JSON.parse(body);
-
-  //       posts.push({
-  //         id: post.id,
-  //         title: post.title,
-  //         content: post.content,
-  //         userId: post.userId,
-
-  //       });
-
-  //       response.writeHead(200, {'Content-Type' : 'application/json'})
-  //       response.end(JSON.stringify({message: "postCreated"}));
-
-  //     })
-  //   }
   }
 }
 
