@@ -15,6 +15,14 @@ const users = [
     email: "Connell29@gmail.com",
     password: "password",
   },
+  {
+    id: 3,
+    name: "new user 1",
+  },
+  {
+    id: 4,
+    name: "new user 2",
+  },
 ];
 
 const posts = [
@@ -28,7 +36,19 @@ const posts = [
     id: 2,
     title: "HTTP의 특성",
     content: "Request/Response와 Stateless!!",
-    userId: 1,
+    userId: 2, //결과가 1로 나와 기존 샘플 변경. 원래 1이였음
+  },
+  {
+    id: 3,
+    imageUrl: "내용 1",
+    userId : 3,
+    content: "sampleContent3"
+  },
+  {
+    id: 4,
+    imageUrl: "내용 2",
+    userId : 4,
+    content: "sampleContent4"
   },
 ];
 
@@ -70,7 +90,7 @@ const httpRequestListener = function(request, response) {
 
       request.on("end", () => {
       // console.log("========body:", body)
-       const post = JSON.parse(body);
+      const post = JSON.parse(body);
 
         posts.push({
           id: post.id,
@@ -85,8 +105,50 @@ const httpRequestListener = function(request, response) {
 
       })
     }
-  }
+  } else if (method === 'GET') {
+    if(url === "/users/postlists"){
+
+    let body = "";
+
+    request.on("data", (data)=>{
+      body += data;
+    });
+
+    request.on("end", ()=> {
+      const arr = [];
+      // arr.push(list)
+
+      for(let i = 0; i < users.length; i++) {
+        for(let j = 0; j < posts.length; j++) {
+          if(users[i]["id"] === posts[j]["userId"]){
+            // const object = {
+            //   userId: users[i].id
+            //   ...
+            //   ...
+            // }
+            // arr.push(object)
+            const object = {
+              userId : users[i].id,
+              usersName : users[i].name,
+              postingId : posts[j].id,
+              postingTitle : posts[j].title,
+              postingContent : posts[j].content,
+              postingImageUrl : posts[j].imageUrl,
+              postingContent : posts[j].content,
+            }
+            arr.push(object);
+
+            }
+            
+          }
+        }
+        // console.log(arr)
+        response.writeHead(200, {'Content-Type' : 'application/json'})
+        response.end(JSON.stringify({data : arr}))
+      }
+  )
 }
+}}
 
 server.on("request", httpRequestListener)
 
